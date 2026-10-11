@@ -84,17 +84,23 @@ export default function Game() {
   }
 
   const moves = history.map((squares, move) => {
+    let location = '';
+    if (move > 0) {
+      const [row, col] = getMoveLocation(history[move - 1], squares);
+      location = ' (' + row + ', ' + col + ')';
+    }
+
     if (move === currentMove) {
       return (
         <li key={move}>
-          <span>You are at move #{move}</span>
+          <span>You are at move #{move}{location}</span>
         </li>
       );
     }
 
     let description;
     if (move > 0) {
-      description = 'Go to move #' + move;
+      description = 'Go to move #' + move + location;
     } else {
       description = 'Go to game start';
     }
@@ -137,6 +143,17 @@ function calculateWinner(squares) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return { player: squares[a], line: [a, b, c] };
+    }
+  }
+  return null;
+}
+
+function getMoveLocation(previousSquares, squares) {
+  for (let i = 0; i < squares.length; i++) {
+    if (previousSquares[i] !== squares[i]) {
+      const row = Math.floor(i / 3) + 1;
+      const col = (i % 3) + 1;
+      return [row, col];
     }
   }
   return null;
